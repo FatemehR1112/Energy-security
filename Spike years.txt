@@ -1,0 +1,54 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import random
+
+# =========================
+# 1. Future years and intervals
+# =========================
+years_future = list(range(2026, 2051))
+intervals = [years_future[i:i+5] for i in range(0, len(years_future), 5)]
+
+# =========================
+# 2. Mixed spike group generator (like your second code)
+# =========================
+def generate_mixed_spike_groups(intervals, spikes_per_interval):
+    selected_years = []
+    for interval in intervals:
+        n = min(spikes_per_interval, len(interval))
+        selected_years.extend(random.sample(interval, n))
+    
+    random.shuffle(selected_years)
+    
+    groups = []
+    group_size = spikes_per_interval
+    for i in range(5):
+        group = selected_years[i*group_size:(i+1)*group_size]
+        group.sort()
+        groups.append(group)
+    
+    return groups
+
+
+# =========================
+# 3. Generate scenarios and spike tables
+# =========================
+
+spike_tables = {}
+
+for spikes in range(1, 6):
+    groups = generate_mixed_spike_groups(intervals, spikes)
+    
+    df_spikes = pd.DataFrame(groups)
+    df_spikes.index = [f"Scenario_{i+1}" for i in range(5)]
+    df_spikes.columns = [f"Spike_{i+1}" for i in range(spikes)]
+    spike_tables[spikes] = df_spikes
+    
+
+# =========================
+# 4. Display spike tables
+# =========================
+for spikes, df_spike in spike_tables.items():
+    print(f"\n==== {spikes} SPIKES SCENARIOS ====")
+    print(df_spike)
+
